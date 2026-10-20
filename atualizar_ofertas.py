@@ -1,4 +1,5 @@
 """Lê as últimas ofertas públicas do canal do Telegram e grava ofertas.json para a página."""
+import html
 import json
 import re
 import sys
@@ -44,7 +45,7 @@ def main():
             "por": por,
             "off": desc.group(1) if desc else "",
             "imagem": m_img.group(1),
-            "link": link,
+            "link": html.unescape(link),  # o Telegram devolve &amp; no href; sem isso o affiliate_id se perde
             "quando": data["datetime"] if data else "",
         })
         if len(ofertas) >= QTD:

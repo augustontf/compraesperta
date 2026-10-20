@@ -63,6 +63,13 @@
   .chamada a{color:var(--verde);font-weight:800}
   footer{text-align:center;font-size:12.5px;color:var(--suave);padding:8px 20px 32px;max-width:480px;margin:0 auto}
 </style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','2924913304539784');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=2924913304539784&ev=PageView&noscript=1"></noscript>
 </head>
 <body>
 <header class="topo">
@@ -125,6 +132,14 @@
 (function(){
   var q=new URLSearchParams(location.search);
   if(q.get('c')==='tg'){var b=document.getElementById('topo-botoes'),tg=b.querySelector('.tg');b.insertBefore(tg,b.firstChild);}
+  // Pixel: clique em "Entrar" = Lead (é o evento que o anúncio vai otimizar)
+  document.querySelectorAll('#topo-botoes .btn').forEach(function(a){
+    a.addEventListener('click',function(ev){
+      var canal=a.classList.contains('wa')?'whatsapp':'telegram';
+      try{fbq('track','Lead',{content_name:canal});fbq('trackCustom','Entrou_'+canal);}catch(e){return;}
+      ev.preventDefault(); setTimeout(function(){location.href=a.href;},350); // dá tempo do evento sair antes de abrir o app
+    });
+  });
   function esc(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
   fetch('ofertas.json?'+Date.now()).then(function(r){return r.json();}).then(function(d){
     var o=(d.ofertas||[]).slice(0,6); if(!o.length) return;

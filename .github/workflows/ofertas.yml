@@ -1,0 +1,38 @@
+name: Atualizar ofertas da página
+
+on:
+  schedule:
+    # De 30 em 30 min, das 07:17 às 23:17 de Fortaleza (10:17 a 02:17 UTC)
+    - cron: "17,47 10-23 * * *"
+    - cron: "17,47 0-1 * * *"
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ofertas
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests beautifulsoup4
+      - run: python atualizar_ofertas.py
+      - name: Salvar
+        run: |
+          if [ -n "$(git status --porcelain ofertas.json)" ]; then
+            git config user.name "compra-esperta-bot"
+            git config user.email "compra-esperta-bot@users.noreply.github.com"
+            git add ofertas.json
+            git commit -m "Atualiza ofertas da página"
+            git pull --rebase --quiet
+            git push
+          fi

@@ -27,7 +27,9 @@ def main():
         foto_el = msg.select_one(".tgme_widget_message_photo_wrap")
         if not texto_el or not foto_el:
             continue
-        texto = texto_el.get_text("\n")
+        for br in texto_el.find_all("br"):
+            br.replace_with("\n")
+        texto = texto_el.get_text("")  # emojis vêm em <i><b>..</b></i>; sem separador para não quebrar a linha
         titulo = next((l.replace("👉", "").strip() for l in texto.split("\n") if l.strip().startswith("👉")), "")
         link = next((a["href"] for a in texto_el.select("a[href]") if "shope" in a["href"]), "")
         m_img = re.search(r"url\('([^']+)'\)", foto_el.get("style", ""))
